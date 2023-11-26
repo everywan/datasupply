@@ -1,0 +1,32 @@
+version: 2.0
+base_image: bionic
+components:
+  golang: 1.19
+
+envs:
+  GOPROXY: https://goproxy.in.zhihu.com,direct
+  GOPRIVATE: git.in.zhihu.com
+
+deps:
+  - libpcre++-dev
+
+build:
+  - git config --global url."git@git.in.zhihu.com:".insteadOf "https://git.in.zhihu.com/"
+  - go mod download || go mod download || go mod download
+  - go mod tidy
+
+  - go build ./...
+
+test:
+
+  unittest:
+    - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+    - make lint
+    #- make test
+
+  coverage_test:
+    report_fpath: coverage.xml
+
+artifacts:
+  targets:
+    - tarball
